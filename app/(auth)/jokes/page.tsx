@@ -4,7 +4,6 @@ import type { Schema } from "../../../amplify/data/resource";
 import { useState, useEffect } from "react";
 import { generateClient } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth/cognito";
-import JokeCreateForm from "@/ui-components/JokeCreateForm";
 import {Button} from '@nextui-org/react'
 
 const client = generateClient<Schema>();
@@ -56,7 +55,7 @@ export default function Events() {
   return (
     <div>
       <Button onClick={createItem}>Do it, baby</Button>
-        <JokeCreateForm>      </JokeCreateForm>
+
       <ul
         role="list"
         className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
