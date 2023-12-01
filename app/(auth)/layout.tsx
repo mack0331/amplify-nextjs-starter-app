@@ -1,11 +1,13 @@
 "use client";
+import Nav from "@/components/Nav";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
+  return (<>
+    <Nav></Nav>
     <div className="bg-white">
       <main className="isolate">
         <div className="sm:pt-12">
@@ -13,5 +15,6 @@ export default function AuthLayout({
         </div>
       </main>
     </div>
+    </>
   );
 }

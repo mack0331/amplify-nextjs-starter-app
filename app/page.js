@@ -6,8 +6,8 @@ import Link from 'next/link';
 export default function Home() {
   return (<>
     <main className={styles.main}>
-    <text>Hello, anonymous user.</text>
-      <Link href="/login">
+      <text>Hello, anonymous user.</text>
+      <Link href="/jokes">
       <div className={styles.main}>
         <a
           className={styles.card}

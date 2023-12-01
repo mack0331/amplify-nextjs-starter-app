@@ -4,17 +4,24 @@ import type { Schema } from "../../../amplify/data/resource";
 import { useState, useEffect } from "react";
 import { generateClient } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth/cognito";
+import JokeCreateForm from "@/ui-components/JokeCreateForm";
+import {Button} from '@nextui-org/react'
 
 const client = generateClient<Schema>();
-
 export default function Events() {
-
+  const [gotUser, setUser] = useState('');
+  
+  //Fetch logged in user ID
+  async function getUser(){
+    const user = await getCurrentUser();
+    setUser(user.userId)
+  }
   async function createItem() {
-      const user = await getCurrentUser();
+
       const {data, errors} = await client.models.Joke.create({
       body: 'Here is a joke body',
       punchline: 'Here is the punchline: ' + Date.now().toString(),
-      owner: user.userId
+      owner: gotUser
     },{authMode: "userPool"
     })
     if (errors) {
@@ -41,13 +48,15 @@ export default function Events() {
   };
 
   useEffect(() => {
+    getUser()
     const sub = fetchEvents();
     return () => sub.unsubscribe()
   }, []);
 
   return (
     <div>
-      <button onClick={createItem}>Do it, baby</button>
+      <Button onClick={createItem}>Do it, baby</Button>
+        <JokeCreateForm>      </JokeCreateForm>
       <ul
         role="list"
         className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
@@ -64,8 +73,8 @@ export default function Events() {
                     {item.body}
                   </h3>
                   <span className="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    {item.punchline} : 
-                  <button onClick={() => deleteItem(item.id)}>Delete</button>
+                    {item.punchline} : {gotUser}
+                 {item.owner === gotUser &&  <Button onClick={() => deleteItem(item.id)}>Delete</Button>}
                   </span>
                 </div>
               </div>
