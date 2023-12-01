@@ -7,7 +7,7 @@ import '@aws-amplify/ui-react/styles.css';
 import config from '../../amplifyconfiguration.json';
 Amplify.configure(config);
 
-export function Login({ signOut, user }: WithAuthenticatorProps) {
+function Login({ signOut, user }: WithAuthenticatorProps) {
   return (
     <>
       <h1>Hello {user?.userId}</h1>
