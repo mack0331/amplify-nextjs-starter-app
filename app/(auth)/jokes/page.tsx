@@ -31,7 +31,9 @@ export default function Events() {
   const [events, setEvents] = useState<Schema["Joke"][]>([]);
 
   function fetchEvents(){
-    return client.models.Joke.observeQuery().subscribe({
+    return client.models.Joke.observeQuery({
+      authMode: 'apiKey'
+    }).subscribe({
       next(value) {
         setEvents([...value.items])
       },
