@@ -3,24 +3,49 @@
 import type { Schema } from "../../../amplify/data/resource";
 import { useState, useEffect } from "react";
 import { generateClient } from "aws-amplify/api";
+import { getCurrentUser } from "aws-amplify/auth/cognito";
 
 const client = generateClient<Schema>();
 
 export default function Events() {
+
+  async function createItem() {
+      const user = await getCurrentUser();
+      const {data, errors} = await client.models.Joke.create({
+      body: 'Here is a joke body',
+      punchline: 'Here is the punchline: ' + Date.now().toString(),
+      owner: user.userId
+    },{authMode: "userPool"
+    })
+    if (errors) {
+      console.log(errors)
+    } else {
+      console.log(data)
+    }
+  }
+  async function deleteItem(gotId: string){
+    await client.models.Joke.delete({
+      id: gotId
+    })
+  }
   const [events, setEvents] = useState<Schema["Joke"][]>([]);
 
-  const fetchEvents = async () => {
-    const { data: items, errors } = await client.models.Joke.list();
-    console.log(items)
-    setEvents(items);
+  function fetchEvents(){
+    return client.models.Joke.observeQuery().subscribe({
+      next(value) {
+        setEvents([...value.items])
+      },
+    })
   };
 
   useEffect(() => {
-    fetchEvents();
+    const sub = fetchEvents();
+    return () => sub.unsubscribe()
   }, []);
 
   return (
     <div>
+      <button onClick={createItem}>Do it, baby</button>
       <ul
         role="list"
         className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
@@ -37,7 +62,8 @@ export default function Events() {
                     {item.body}
                   </h3>
                   <span className="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    {item.punchline}
+                    {item.punchline} : 
+                  <button onClick={() => deleteItem(item.id)}>Delete</button>
                   </span>
                 </div>
               </div>
